@@ -65,7 +65,7 @@ const SendSingleEmail = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:5000/api/email/sendSingleEmail', {
+            const response = await fetch('https://school-management-server-yhtv.onrender.com/api/email/sendSingleEmail', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

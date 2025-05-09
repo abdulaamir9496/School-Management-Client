@@ -2,18 +2,15 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { IndianRupee } from 'lucide-react';
 import { ScrollText } from 'lucide-react';
-import NewRegistration from '../Registration/NewRegistration';
-// import EnquiryForm from '../Enquiry/EnquiryForm';
 import BonafideMainPage from '../Certificates/BonafideMainPage';
 import StudentMainPage from '../Students/StudentMainPage';
 import Communication from '../Communication/Communication';
 import FeesMainPage from '../Fees/FeesMainPage';
-import { AuthContext } from '../../context/AuthContext'; 
+import { AuthContext } from '../../context/AuthContext';
 import logo from "../../assets/schlogo.png";
 import Enquirymain from '../Enquiry/Enquirymain';
 import NewRegistrationMainPage from '../Registration/NewRegistrationMain';
 import CircularCalendar from '../../components/CircularCalendar';
- // Adjust path if needed
 
 
 const Icons = {
@@ -40,21 +37,21 @@ const DashboardHome = () => {
         totalFeeCollection: 0,
         totalEnquiries: 0,
         certificatesGenerated: 0,
-      });
-      
-      useEffect(() => {
+    });
+
+    useEffect(() => {
         const fetchStats = async () => {
-          try {
-            const { data } = await axios.get('http://localhost:5000/api/dashboard/stats');
-            setStats(data);
-          } catch (error) {
-            console.error('Error fetching dashboard stats:', error);
-          }
+            try {
+                const { data } = await axios.get('https://school-management-server-yhtv.onrender.com/api/dashboard/stats');
+                setStats(data);
+            } catch (error) {
+                console.error('Error fetching dashboard stats:', error);
+            }
         };
-      
+
         fetchStats();
-      }, []);
-      
+    }, []);
+
 
     const handleLogout = async () => {
         await logout();
@@ -80,7 +77,7 @@ const DashboardHome = () => {
         setSidebarOpen(!sidebarOpen);
     };
 
-    
+
 
     return (
         <div className="h-screen flex flex-col">
@@ -89,19 +86,19 @@ const DashboardHome = () => {
                 <div className="px-4 py-3 flex justify-between items-center">
                     <div className="flex items-center">
                         {/* Mobile menu button */}
-                        <button 
+                        <button
                             onClick={toggleSidebar}
                             className="mr-4 md:hidden text-gray-700"
                             aria-label="Toggle menu"
                         >
                             <Icons.Menu />
                         </button>
-                        
+
                         {/* Logo image instead of text */}
                         <div className="flex items-center">
-                            <img 
+                            <img
                                 src={logo}
-                                alt="Gyanam School Logo" 
+                                alt="Gyanam School Logo"
                                 className="h-8 md:h-13 w-auto" // Adjust height as needed
                             />
                             {/* You can keep the text alongside the logo if desired */}
@@ -113,7 +110,7 @@ const DashboardHome = () => {
                         <button className="p-2 rounded-full text-gray-600 hover:bg-gray-100">
                             <Icons.Notification />
                         </button>
-                        
+
                         {/* Display logged in user */}
                         <div className="flex items-center text-gray-1000 ">
                             <Icons.User />
@@ -133,7 +130,7 @@ const DashboardHome = () => {
             {/* Content Area */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar - Fixed positioning for mobile and regular for desktop */}
-                <div 
+                <div
                     className={
                         `${sidebarOpen ? 'block' : 'hidden'}
                         md:block md:relative md:w-64
@@ -143,7 +140,7 @@ const DashboardHome = () => {
                     <div className="h-full bg-gradient-to-b from-blue-700 to-blue-900 text-white overflow-y-auto flex flex-col">
                         <div className="p-4 text-xl font-bold border-b border-blue-800 flex justify-between items-center">
                             <span>Dashboard</span>
-                            <button 
+                            <button
                                 onClick={toggleSidebar}
                                 className="md:hidden"
                             >
@@ -154,8 +151,8 @@ const DashboardHome = () => {
                             <ul>
                                 {navItems.map((item) => (
                                     <li key={item.id} className="mb-2">
-                                        <button 
-                                            onClick={() => handleNavClick(item.id)} 
+                                        <button
+                                            onClick={() => handleNavClick(item.id)}
                                             className={`flex items-center w-full p-3 rounded-md text-left transition ${currentTab === item.id ? 'bg-blue-800 text-white' : 'text-blue-100 hover:bg-blue-800'}`}
                                         >
                                             <span className="mr-3"><item.icon /></span>
@@ -165,7 +162,7 @@ const DashboardHome = () => {
                                 ))}
                             </ul>
                         </nav>
-                        
+
                         {/* Back to Dashboard button at the bottom of sidebar */}
                         {currentTab !== 'dashboard' && (
                             <div className="p-4 border-t border-blue-800">
@@ -174,7 +171,7 @@ const DashboardHome = () => {
                                     onClick={() => handleNavClick('dashboard')}
                                 >
                                     <span className="">
-                                    ⬅ <span className="ml-2">Back to Dashboard</span>
+                                        ⬅ <span className="ml-2">Back to Dashboard</span>
                                     </span>
                                 </button>
                             </div>
@@ -184,7 +181,7 @@ const DashboardHome = () => {
 
                 {/* Transparent overlay for closing sidebar on mobile */}
                 {sidebarOpen && (
-                    <div 
+                    <div
                         className="fixed inset-0 bg-black bg-opacity-25 z-20 md:hidden"
                         onClick={() => setSidebarOpen(false)}
                     ></div>
@@ -205,78 +202,78 @@ const DashboardHome = () => {
                         {/* Enhanced Dashboard content from paste.txt */}
                         {currentTab === 'dashboard' && (
                             <>
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 min-h-28">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 min-h-28">
 
-{/* Total Students */}
-<div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-500 hover:shadow-lg transition-shadow duration-100">
-  <div className="flex items-center">
-    <div className="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
-    <Icons.Student />
-      {/* <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    {/* Total Students */}
+                                    <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-500 hover:shadow-lg transition-shadow duration-100">
+                                        <div className="flex items-center">
+                                            <div className="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
+                                                <Icons.Student />
+                                                {/* <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-5-4M9 20h6M4 20h5v-2a4 4 0 00-5-4M16 7a4 4 0 01-8 0 4 4 0 018 0z" />
       </svg> */}
-    </div>
-    <div>
-      <p className="text-gray-700 text-lg font-semibold mb-1">Total Students</p>
-      <p className="text-2xl font-semibold text-gray-800 mb-2">{stats.totalStudents}</p>
-    </div>
-  </div>
-</div>
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-700 text-lg font-semibold mb-1">Total Students</p>
+                                                <p className="text-2xl font-semibold text-gray-800 mb-2">{stats.totalStudents}</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
-{/* Fee Collection */}
-<div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-green-500 hover:shadow-lg transition-shadow duration-100">
-  <div className="flex items-center">
-    <div className="p-3 rounded-full bg-green-100 text-green-500 mr-4">
-    <IndianRupee className="text-green-500" />
-      {/* <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-  <path d="M6 3h12v2H6v2h12v2H6v2h8a4 4 0 0 1-4 4h-4v2h4a6 6 0 0 0 6-6H6z"/>
+                                    {/* Fee Collection */}
+                                    <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-green-500 hover:shadow-lg transition-shadow duration-100">
+                                        <div className="flex items-center">
+                                            <div className="p-3 rounded-full bg-green-100 text-green-500 mr-4">
+                                                <IndianRupee className="text-green-500" />
+                                                {/* <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+<path d="M6 3h12v2H6v2h12v2H6v2h8a4 4 0 0 1-4 4h-4v2h4a6 6 0 0 0 6-6H6z"/>
 </svg> */}
 
-    </div>
-    <div>
-      <p className="text-gray-700 text-lg font-semibold mb-1">Fee Collection</p>
-      <p className="text-2xl font-semibold text-gray-800 mb-2">
-        ₹{stats.totalFeeCollection.toLocaleString()}
-      </p>
-    </div>
-  </div>
-</div>
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-700 text-lg font-semibold mb-1">Fee Collection</p>
+                                                <p className="text-2xl font-semibold text-gray-800 mb-2">
+                                                    ₹{stats.totalFeeCollection.toLocaleString()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
 
-{/* Enquiries */}
-<div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-yellow-500 hover:shadow-lg transition-shadow duration-100">
-  <div className="flex items-center">
-    <div className="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4">
-      {/* Phone/Enquiry Icon */}
-      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-  <path d="M2 3v18l4-4h14a2 2 0 0 0 2-2V3H2zm11 10h-2v-2h2v2zm0-4h-2V7h2v2z"/>
-</svg>
+                                    {/* Enquiries */}
+                                    <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-yellow-500 hover:shadow-lg transition-shadow duration-100">
+                                        <div className="flex items-center">
+                                            <div className="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4">
+                                                {/* Phone/Enquiry Icon */}
+                                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M2 3v18l4-4h14a2 2 0 0 0 2-2V3H2zm11 10h-2v-2h2v2zm0-4h-2V7h2v2z" />
+                                                </svg>
 
-    </div>
-    <div>
-      <p className="text-gray-700 text-lg font-semibold mb-1">Enquiries</p>
-      <p className="text-2xl font-semibold text-gray-800 mb-2">{stats.totalEnquiries}</p>
-    </div>
-  </div>
-</div>
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-700 text-lg font-semibold mb-1">Enquiries</p>
+                                                <p className="text-2xl font-semibold text-gray-800 mb-2">{stats.totalEnquiries}</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
-{/* Certificates Generated */}
-<div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-purple-500 hover:shadow-lg transition-shadow duration-100">
-  <div className="flex items-center">
-    <div className="p-3 rounded-full bg-purple-100 text-purple-500 mr-4">
-      {/* Award/Certificate Icon */}
-      <ScrollText className="text-purple-500 w-6 h-6" />
+                                    {/* Certificates Generated */}
+                                    <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-purple-500 hover:shadow-lg transition-shadow duration-100">
+                                        <div className="flex items-center">
+                                            <div className="p-3 rounded-full bg-purple-100 text-purple-500 mr-4">
+                                                {/* Award/Certificate Icon */}
+                                                <ScrollText className="text-purple-500 w-6 h-6" />
 
-    </div>
-    <div>
-      <p className="text-gray-700 text-lg font-semibold mb-1">Certificates Generated</p>
-      <p className="text-2xl font-semibold text-gray-800 mb-2">{stats.certificatesGenerated}</p>
-    </div>
-  </div>
-</div>
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-700 text-lg font-semibold mb-1">Certificates Generated</p>
+                                                <p className="text-2xl font-semibold text-gray-800 mb-2">{stats.certificatesGenerated}</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
-</div>
-{/* <Calendar/> */}
-                          {/* Recent Activities & Charts */}
+                                </div>
+                                {/* <Calendar/> */}
+                                {/* Recent Activities & Charts */}
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                     <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
                                         <div className="flex items-center justify-between mb-4">
@@ -332,8 +329,8 @@ const DashboardHome = () => {
                                     </div>
 
                                     <div className="bg-white rounded-lg shadow-md p-6">
-                                        
-                                        <CircularCalendar/>
+
+                                        <CircularCalendar />
                                     </div>
                                 </div>
                             </>

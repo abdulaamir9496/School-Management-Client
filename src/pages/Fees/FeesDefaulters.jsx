@@ -14,7 +14,7 @@ const FeesDefaulters = () => {
     }
 
     try {
-      const response = await axios.get('http://localhost:5000/api/fees/students-with-balance', {
+      const response = await axios.get('https://school-management-server-yhtv.onrender.com/api/fees/students-with-balance', {
         params: { grade, section },
       });
       setDefaulters(response.data);

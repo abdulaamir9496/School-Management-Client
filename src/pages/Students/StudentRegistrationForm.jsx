@@ -20,7 +20,7 @@ const DisplayStudentInfo = () => {
           : { studentName: query };
 
       const response = await axios.get(
-        'http://localhost:5000/api/Newregistration/findStudents',
+        'https://school-management-server-yhtv.onrender.com/api/Newregistration/findStudents',
         { params }
       );
 
@@ -43,7 +43,7 @@ const DisplayStudentInfo = () => {
 
   const handleGetAll = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/newRegistration/getstudents');
+      const response = await axios.get('https://school-management-server-yhtv.onrender.com/api/newRegistration/getstudents');
       console.log('Response Data:', response.data); // Log to check the structure
 
       // Ensure we access the students array correctly
@@ -89,7 +89,7 @@ const DisplayStudentInfo = () => {
   const renderDocument = (filename) => {
     if (!filename) return 'N/A';
 
-    const fileUrl = `http://localhost:5000/uploads/${filename}`;
+    const fileUrl = `https://school-management-server-yhtv.onrender.com/uploads/${filename}`;
     const isPDF = filename.toLowerCase().endsWith('.pdf');
 
     return isPDF ? (
@@ -118,11 +118,11 @@ const DisplayStudentInfo = () => {
   const renderPhoto = (filename) =>
     filename ? (
       <img
-        src={`http://localhost:5000/uploads/${filename}`}
+        src={`https://school-management-server-yhtv.onrender.com/uploads/${filename}`}
         alt="student"
         className="w-14 h-14 object-cover rounded cursor-pointer hover:scale-105 transition-transform"
         onClick={() =>
-          setPreviewImage(`http://localhost:5000/uploads/${filename}`)
+          setPreviewImage(`https://school-management-server-yhtv.onrender.com/uploads/${filename}`)
         }
       />
     ) : (
@@ -147,13 +147,13 @@ const DisplayStudentInfo = () => {
         Email: student.emailAddress || 'N/A',
         Address: student.address || 'N/A',
         BirthCertificate: student.birthCertificate
-          ? `http://localhost:5000/uploads/${student.birthCertificate}`
+          ? `https://school-management-server-yhtv.onrender.com/uploads/${student.birthCertificate}`
           : 'N/A',
         PreviousMarksheet: student.previousMarksheet
-          ? `http://localhost:5000/uploads/${student.previousMarksheet}`
+          ? `https://school-management-server-yhtv.onrender.com/uploads/${student.previousMarksheet}`
           : 'N/A',
         TransferCertificate: student.transferCertificate
-          ? `http://localhost:5000/uploads/${student.transferCertificate}`
+          ? `https://school-management-server-yhtv.onrender.com/uploads/${student.transferCertificate}`
           : 'N/A',
       }));
     

@@ -26,7 +26,7 @@ const FeesBalanceReport = () => {
 
   try {
     // 🔍 1️⃣ Fetch student data first
-    const studentResponse = await axios.get('http://localhost:5000/api/students/search', {
+    const studentResponse = await axios.get('https://school-management-server-yhtv.onrender.com/api/students/search', {
       params: {
         admissionNumber: searchBy === "admission" ? searchTerm.trim() : undefined,
         studentName: searchBy === "name" ? searchTerm.trim() : undefined,
@@ -40,7 +40,7 @@ const FeesBalanceReport = () => {
       const student = studentResponse.data.student;
 
       // 🔍 2️⃣ Now fetch payment data using the admission number
-      const paymentResponse = await axios.get('http://localhost:5000/api/fees', {
+      const paymentResponse = await axios.get('https://school-management-server-yhtv.onrender.com/api/fees', {
         params: {
           admissionNumber: student.admissionNumber,
         }
@@ -89,7 +89,7 @@ const FeesBalanceReport = () => {
   const handleFetchDefaulters = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/fees/defaulters");
+      const response = await axios.get("https://school-management-server-yhtv.onrender.com/api/fees/defaulters");
       setDefaultersData(response.data);
     } catch (error) {
       console.error("Error fetching defaulters:", error);

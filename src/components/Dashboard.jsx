@@ -109,17 +109,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-// const Dashboard = () => {
-//     return (
-//         <div>
-//             <h1 className="text-3xl font-bold text-center mt-10">Welcome to the Dashboard Page</h1>
-//             <p className="text-center mt-4">This is a simple Dashboard page for our application.</p>
-//             <div className="flex justify-center mt-10">
-//                 <img src="/path/to/your/image.jpg" alt="Home Image" className="w-1/2 h-auto rounded-lg shadow-lg" />
-//             </div>
-//         </div>
-//     )
-// }
-
-// export default Dashboard

@@ -12,7 +12,8 @@ const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     // Configure axios defaults
-    axios.defaults.baseURL = 'http://localhost:5000/api';
+    // axios.defaults.baseURL = 'http://localhost:5000/api';
+    axios.defaults.baseURL = 'https://school-management-server-yhtv.onrender.com/api';
     axios.defaults.withCredentials = true;
 
     // Axios interceptor to handle token expiration

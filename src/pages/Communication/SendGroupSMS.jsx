@@ -30,7 +30,7 @@ const SendGroupEmail = () => {
     setIsSending(true);
   
     try {
-      const res = await axios.post('http://localhost:5000/api/email/send-group', {
+      const res = await axios.post('https://school-management-server-yhtv.onrender.com/api/email/send-group', {
         recipients: emailList,
         subject,
         message,

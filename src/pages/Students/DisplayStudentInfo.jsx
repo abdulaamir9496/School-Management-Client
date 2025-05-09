@@ -21,7 +21,7 @@ const DisplayStudentInfo = () => {
     setMessage('');
 
     try {
-      const response = await axios.get('http://localhost:5000/api/students/getstudents', {
+      const response = await axios.get('https://school-management-server-yhtv.onrender.com/api/students/getstudents', {
         params: { grade: selectedClass, section: selectedSection },
       });
 

@@ -13,7 +13,7 @@ const SentSMSHistory = () => {
         setDataFetched(false);
 
         try {
-            const response = await fetch('http://localhost:5000/api/email/history');
+            const response = await fetch('https://school-management-server-yhtv.onrender.com/api/email/history');
             const result = await response.json();
 
             if (result.success) {

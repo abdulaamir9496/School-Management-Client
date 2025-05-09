@@ -49,7 +49,7 @@ const Enquirymain = ({ setPage }) => {
             </div>
 
             {/* Back Button */}
-           
+        
         </div>
     );
 };
