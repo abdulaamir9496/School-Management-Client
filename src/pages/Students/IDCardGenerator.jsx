@@ -1,6 +1,6 @@
-// ... all your imports
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import schlogo from "../../assets/schlogo.png";
+import ReactToPdf from "react-to-pdf";
 
 function IDCardGenerator() {
   const [searchBy, setSearchBy] = useState("admissionNumber");
@@ -34,13 +34,58 @@ function IDCardGenerator() {
     setShowPreview(!showPreview);
   };
 
+  const pdfRef = useRef();
+
   const handlePrint = () => {
-    const printContents = document.getElementById("idCard").innerHTML;
-    const originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
-    window.location.reload();
+    const idCardContent = document.getElementById("idCard").innerHTML;
+    const styleContent = document.querySelector("style")?.outerHTML || "";
+    const printWindow = window.open("", "_blank");
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>ID Card</title>
+          <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+          ${styleContent}
+          <style>
+            @media print {
+              body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+              }
+              .id-card-print {
+                box-shadow: none !important;
+                border: 1px solid black !important;
+                width: 350px !important;
+                height: auto !important;
+              }
+              .id-card-print img {
+                max-width: 100%;
+                max-height: 100%; 
+                object-fit: contain;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="id-card-print">
+            ${idCardContent}
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              window.onafterprint = window.close;
+            };
+          </script>
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
   };
 
   const handleSearch = async () => {
@@ -53,7 +98,7 @@ function IDCardGenerator() {
           : `studentName=${searchValue}`;
 
       const res = await fetch(
-        `https://school-management-server-1pvb.onrender.com/api/idcard/find-student?${queryParam}`
+        `http://localhost:5000/api/idcard/find-student?${queryParam}`
       );
 
       if (!res.ok) {
@@ -70,16 +115,14 @@ function IDCardGenerator() {
         rollNo: studentData.rollNumber,
         gender: studentData.gender,
         dob: studentData.dateOfBirth
-  ? new Date(studentData.dateOfBirth)
-      .toLocaleDateString("en-GB")
-      .replace(/\//g, "-")  // replace slashes with dashes
-  : "",
-
-
+          ? new Date(studentData.dateOfBirth)
+            .toLocaleDateString("en-GB")
+            .replace(/\//g, "-")  // replace slashes with dashes
+          : "",
         address: studentData.address,
         phone: studentData.phoneNumber,
         photo: studentData.studentPhoto
-          ? `https://school-management-server-1pvb.onrender.com/uploads/${studentData.studentPhoto}`
+          ? `http://localhost:5000/uploads/${studentData.studentPhoto}`
           : null,
         logo: student.logo,
       });
@@ -99,68 +142,80 @@ function IDCardGenerator() {
       <style>
         {`
           @media print {
-            body * {
-              visibility: hidden;
+            body {
+              margin: 0;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
             }
-            #idCard, #idCard * {
-              visibility: visible;
+            .id-card-print {
+              box-shadow: none !important;
+              border: none !important;
+              width: 350px !important;
+              height: auto !important;
             }
-            #idCard {
-              position: absolute;
-              left: 0;
-              top: 0;
+            .id-card-print img {
+              max-width: 100%;
+              max-height: 150px; /* Adjust to desired size */
+              object-fit: contain;
+            }
+            .id-card-print .student-photo {
+              width: 80px;
+              height: 200px;
+              object-fit: cover;
             }
           }
         `}
       </style>
-      
-      {/* Search Form */}
-      <div className="bg-white p-4 rounded shadow mb-6 w-full"> 
-      <h2 className="text-2xl font-bold text-blue-600 mb-4">Identity Card Generator</h2>
-      <div className="flex flex-wrap items-center gap-4">
-        <label className="font-semibold text-lg">Generate By</label>
-        <label>
+
+      <div className="bg-white p-4 rounded shadow mb-6 w-full">
+        <h2 className="text-2xl font-bold text-blue-600 mb-4">Identity Card Generator</h2>
+        <div className="flex flex-wrap items-center gap-4">
+          <label className="font-semibold text-lg">Generate By</label>
+          <label>
+            <input
+              type="radio"
+              name="searchBy"
+              value="admissionNumber"
+              checked={searchBy === "admissionNumber"}
+              onChange={() => setSearchBy("admissionNumber")}
+            />
+            <span className="ml-2 text-lg">Admission No</span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="searchBy"
+              value="studentName"
+              checked={searchBy === "studentName"}
+              onChange={() => setSearchBy("studentName")}
+            />
+            <span className="ml-2 text-lg">Student Name</span>
+          </label>
           <input
-            type="radio"
-            name="searchBy"
-            value="admissionNumber"
-            checked={searchBy === "admissionNumber"}
-            onChange={() => setSearchBy("admissionNumber")}
+            type="text"
+            placeholder={
+              searchBy === "admissionNumber"
+                ? "Enter Admission No..."
+                : "Enter Student Name..."
+            }
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="px-4 py-2 border rounded w-74 h-9 border-black-100 hover:border-black-200 focus:outline-none focus:ring-1 "
           />
-          <span className="ml-2 text-lg">Admission No</span>
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="searchBy"
-            value="studentName"
-            checked={searchBy === "studentName"}
-            onChange={() => setSearchBy("studentName")}
-          />
-          <span className="ml-2 text-lg">Student Name</span>
-        </label>
-        <input
-          type="text"
-          placeholder={
-            searchBy === "admissionNumber"
-              ? "Enter Admission No..."
-              : "Enter Student Name..."
-          }
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          className="px-4 py-2 border rounded w-74 h-9 border-black-100 hover:border-black-200 focus:outline-none focus:ring-1 "
-        />
-        <button
-          onClick={handleSearch}
-          className="bg-blue-600 hover:bg-blue-700  text-white px-4 py-1.5 rounded-lg hover:bg-blue-700"
-          disabled={isLoading}
-        >
-          Generate
-        </button>
-      </div></div>
+          <button
+            onClick={handleSearch}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg"
+            disabled={isLoading}
+          >
+            Generate
+          </button>
+        </div>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Form Section */}
         {showStudentForm && (
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold mb-6 text-blue-600">Student Details</h2>
@@ -246,12 +301,16 @@ function IDCardGenerator() {
           </div>
         )}
 
-        {/* ID Card Preview */}
         {showPreview && (
           <div
             id="idCard"
+            ref={pdfRef}
             className="bg-white border border-gray-300 rounded shadow flex flex-col justify-between text-center mx-auto w-full max-w-xs h-120 p-4"
-            
+            style={{
+              width: "302px",
+              height: "480px",
+              border: "1px solid black",
+            }}
           >
             <div className="flex flex-col items-center">
               {student.logo && (
@@ -261,18 +320,17 @@ function IDCardGenerator() {
                   className="h-16 object-contain mb-6"
                 />
               )}
-              <div className="w-26 h-29 bg-gray-200 flex items-center justify-center overflow-hidden rounded border border-gray-400">
+              <div className="w-24 h-24 bg-gray-200 flex items-center justify-center overflow-hidden rounded border border-gray-400">
                 {student.photo ? (
                   <img
                     src={student.photo}
                     alt="Student"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover student-photo"
                   />
                 ) : (
                   <span className="text-gray-500 text-xs">Photo</span>
                 )}
               </div>
-
               <div className="text-xs text-left w-full space-y-1.5 mt-4">
                 <p><strong>Name:</strong> <span className="pl-1">{student.name}</span></p>
                 <p><strong>Father:</strong> <span className="pl-1">{student.fatherName}</span></p>
@@ -294,7 +352,6 @@ function IDCardGenerator() {
         )}
       </div>
 
-      {/* Action Buttons */}
       {showStudentForm && (
         <div className="flex justify-between items-center gap-4 mt-8">
           <button

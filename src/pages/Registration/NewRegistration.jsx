@@ -11,14 +11,16 @@ const StudentRegistrationForm = () => {
     previousMarksheet: null,
     transferCertificate: null,
   });
-  const [photoPreview, setPhotoPreview] = useState(null);  
+  const [photoPreview, setPhotoPreview] = useState(null);
   const stepFields = [
     ['firstName', 'middleName', 'lastName', 'dateOfBirth', 'gender', 'bloodGroup'],
     ['grade', 'section', 'academicYear', 'admissionNumber', 'rollNumber', 'totalFees'],
     ['parentName', 'relationship', 'phoneNumber', 'emailAddress', 'address'],
     ['studentPhoto', 'birthCertificate', 'previousMarksheet', 'transferCertificate']
   ];
-  
+  const FILE_SIZE = 2 * 1024 * 1024; // 2MB
+  const FILE_SIZE_PDF = 5 * 1024 * 1024; // 5MB
+
   const formik = useFormik({
     initialValues: {
       firstName: '', middleName: '', lastName: '',
@@ -45,19 +47,44 @@ const StudentRegistrationForm = () => {
       phoneNumber: Yup.string().matches(/^\d{10}$/, 'Phone number must be 10 digits').required('Phone number is required'),
       emailAddress: Yup.string().email('Invalid email address').required('Email is required'),
       address: Yup.string().required('Address is required'),
-      studentPhoto: Yup.mixed().required('Student photo is required').test('fileSize', 'File too large', (value) => {
-        return value && value.size <= 2 * 1024 * 1024; // 2MB
-      }),
-      birthCertificate: Yup.mixed().required('Birth certificate is required').test('fileSize', 'File too large', (value) => {
-        return value && value.size <= 2 * 1024 * 1024; // 2MB
-      }),
-      previousMarksheet: Yup.mixed().required('Previous marksheet is required').test('fileSize', 'File too large', (value) => {
-        return value && value.size <= 2 * 1024 * 1024; // 2MB
-      }),
-      transferCertificate: Yup.mixed().required('Transfer certificate is required').test('fileSize', 'File too large', (value) => {
-        return value && value.size <= 2 * 1024 * 1024; // 2MB
-      }),
+      studentPhoto: Yup.mixed()
+        .required('Student photo is required')
+        .test('fileSize', 'File too large', (value) => {
+          return value instanceof File && value.size <= FILE_SIZE;
+        })
+
+        .test('fileType', 'Unsupported format', (value) => {
+          return value instanceof File && ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type);
+        }),
+      birthCertificate: Yup.mixed()
+        .required('Birth certificate is required')
+        .test('fileSize', 'File too large', (value) => {
+          return value instanceof File && value.size <= FILE_SIZE;
+        })
+
+        .test('fileType', 'Unsupported format', (value) => {
+          return value instanceof File && ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type);
+        }),
+      previousMarksheet: Yup.mixed()
+        .required('Previous marksheet is required')
+        .test('fileSize', 'File too large', (value) => {
+          return value instanceof File && value.size <= FILE_SIZE;
+        })
+
+        .test('fileType', 'Unsupported format', (value) => {
+          return value instanceof File && ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type);
+        }),
+      transferCertificate: Yup.mixed()
+        .required('Transfer certificate is required')
+        .test('fileSize', 'File too large', (value) => {
+          return value instanceof File && value.size <= FILE_SIZE;
+        })
+
+        .test('fileType', 'Unsupported format', (value) => {
+          return value instanceof File && ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type);
+        }),
     }),
+
     onSubmit: async (values) => {
       const formData = new FormData();
       for (let key in values) {
@@ -67,7 +94,7 @@ const StudentRegistrationForm = () => {
       }
 
       try {
-        const response = await axios.post('https://school-management-server-1pvb.onrender.com/api/Newregistration/register', formData, {
+        const response = await axios.post('http://localhost:5000/api/Newregistration/register', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         alert('Student Registered Successfully!');
@@ -185,88 +212,133 @@ const StudentRegistrationForm = () => {
       </div>
     </div>,
 
-<div key="documents">
-<h3 className="text-lg font-semibold mb-2">Documents & Photos</h3>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div key="documents">
+      <h3 className="text-lg font-semibold mb-2">Documents & Photos</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-  <div>
-    <label>Student Photo</label>
-    <input
-      type="file"
-      onChange={(e) => {
-        const file = e.currentTarget.files[0];
-        formik.setFieldValue('studentPhoto', file);
-        setFilePreviews((prev) => ({
-          ...prev,
-          studentPhoto: URL.createObjectURL(file),
-        }));
-      }}
-      className={inputClass}
-    />
-    {filePreviews.studentPhoto && (
-      <img src={filePreviews.studentPhoto} alt="Student Photo" className="mt-2 h-24 w-24 object-cover rounded" />
-    )}
-  </div>
+        <div>
+          <label>Student Photo</label>
+          <input
+            type="file"
+            onChange={(e) => {
+              const file = e.currentTarget.files[0];
+              formik.setFieldValue('studentPhoto', file);
+              setFilePreviews((prev) => ({
+                ...prev,
+                studentPhoto: file ? URL.createObjectURL(file) : null,
+              }));
+            }}
+            className={inputClass}
+          />
+          <div className="text-gray-500 text-sm mt-1">
+            Supported formats: JPG, JPEG, PNG. Max size: 2MB.
+          </div>
+          {filePreviews.studentPhoto && (
+            <img
+              src={filePreviews.studentPhoto}
+              alt="Student Photo"
+              className="mt-2 h-24 w-24 object-cover rounded"
+            />
+          )}
+          {formik.touched.studentPhoto && formik.errors.studentPhoto && (
+            <div className="text-red-500 text-sm mt-1">{formik.errors.studentPhoto}</div>
+          )}
+        </div>
 
-  <div>
-    <label>Birth Certificate</label>
-    <input
-      type="file"
-      onChange={(e) => {
-        const file = e.currentTarget.files[0];
-        formik.setFieldValue('birthCertificate', file);
-        setFilePreviews((prev) => ({
-          ...prev,
-          birthCertificate: URL.createObjectURL(file),
-        }));
-      }}
-      className={inputClass}
-    />
-    {filePreviews.birthCertificate && (
-      <img src={filePreviews.birthCertificate} alt="Birth Certificate" className="mt-2 h-24 w-24 object-cover rounded" />
-    )}
-  </div>
+        <div>
+          <label>Birth Certificate</label>
+          <input
+            type="file"
+            onChange={(e) => {
+              const file = e.currentTarget.files[0];
+              formik.setFieldValue('birthCertificate', file);
+              setFilePreviews((prev) => ({
+                ...prev,
+                birthCertificate: file ? URL.createObjectURL(file) : null,
+              }));
+            }}
+            className={inputClass}
+          />
+          <div className="text-gray-500 text-sm mt-1">
+            Supported formats: JPG, JPEG, PNG. Max size: 2MB.
+          </div>
+          {filePreviews.birthCertificate && (
+            <img
+              src={filePreviews.birthCertificate}
+              alt="Birth Certificate"
+              className="mt-2 h-24 w-24 object-cover rounded"
+            />
+          )}
+          {formik.touched.birthCertificate && formik.errors.birthCertificate && (
+            <div className="text-red-500 text-sm mt-1">
+              {formik.errors.birthCertificate}
+            </div>
+          )}
+        </div>
 
-  <div>
-    <label>Previous Marksheet</label>
-    <input
-      type="file"
-      onChange={(e) => {
-        const file = e.currentTarget.files[0];
-        formik.setFieldValue('previousMarksheet', file);
-        setFilePreviews((prev) => ({
-          ...prev,
-          previousMarksheet: URL.createObjectURL(file),
-        }));
-      }}
-      className={inputClass}
-    />
-    {filePreviews.previousMarksheet && (
-      <img src={filePreviews.previousMarksheet} alt="Marksheet" className="mt-2 h-24 w-24 object-cover rounded" />
-    )}
-  </div>
+        <div>
+          <label>Previous Marksheet</label>
+          <input
+            type="file"
+            onChange={(e) => {
+              const file = e.currentTarget.files[0];
+              formik.setFieldValue('marksheet', file);
+              setFilePreviews((prev) => ({
+                ...prev,
+                marksheet: file ? URL.createObjectURL(file) : null,
+              }));
+            }}
+            className={inputClass}
+          />
+          <div className="text-gray-500 text-sm mt-1">
+            Supported formats: JPG, JPEG, PNG. Max size: 2MB.
+          </div>
+          {filePreviews.marksheet && (
+            <img
+              src={filePreviews.marksheet}
+              alt="Marksheet"
+              className="mt-2 h-24 w-24 object-cover rounded"
+            />
+          )}
+          {formik.touched.marksheet && formik.errors.marksheet && (
+            <div className="text-red-500 text-sm mt-1">
+              {formik.errors.marksheet}
+            </div>
+          )}
+        </div>
 
-  <div>
-    <label>Transfer Certificate</label>
-    <input
-      type="file"
-      onChange={(e) => {
-        const file = e.currentTarget.files[0];
-        formik.setFieldValue('transferCertificate', file);
-        setFilePreviews((prev) => ({
-          ...prev,
-          transferCertificate: URL.createObjectURL(file),
-        }));
-      }}
-      className={inputClass}
-    />
-    {filePreviews.transferCertificate && (
-      <img src={filePreviews.transferCertificate} alt="Transfer Certificate" className="mt-2 h-24 w-24 object-cover rounded" />
-    )}
-  </div>
-
-</div>
-</div>
+        <div>
+          <label>Transfer Certificate</label>
+          <input
+            type="file"
+            onChange={(e) => {
+              const file = e.currentTarget.files[0];
+              formik.setFieldValue('transferCertificate', file);
+              setFilePreviews((prev) => ({
+                ...prev,
+                transferCertificate: file ? URL.createObjectURL(file) : null,
+              }));
+            }}
+            className={inputClass}
+          />
+          <div className="text-gray-500 text-sm mt-1">
+            Supported formats: JPG, JPEG, PNG. Max size: 2MB.
+          </div>
+          {filePreviews.transferCertificate && (
+            <img
+              src={filePreviews.transferCertificate}
+              alt="Transfer Certificate"
+              className="mt-2 h-24 w-24 object-cover rounded"
+            />
+          )}
+          {formik.touched.transferCertificate && formik.errors.transferCertificate && (
+            <div className="text-red-500 text-sm mt-1">
+              {formik.errors.transferCertificate}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
 
   ];
 
@@ -285,32 +357,32 @@ const StudentRegistrationForm = () => {
           </button>
         )}
         {step < sections.length - 1 ? (
-        <button
-        type="button"
-        onClick={async () => {
-          const fieldsToValidate = stepFields[step];
-          
-          // Set touched for current fields
-          const touched = {};
-          fieldsToValidate.forEach(field => touched[field] = true);
-          formik.setTouched(touched, true);
-        
-          // Delay a tick to let Formik update state
-          setTimeout(async () => {
-            const errors = await formik.validateForm();
-            const hasErrors = fieldsToValidate.some(field => errors[field]);
-            if (!hasErrors) {
-              nextStep();
-            }
-          }, 0);
-        }}
-        
-        
-        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-      >
-        Next
-      </button>
-      
+          <button
+            type="button"
+            onClick={async () => {
+              const fieldsToValidate = stepFields[step];
+
+              // Set touched for current fields
+              const touched = {};
+              fieldsToValidate.forEach(field => touched[field] = true);
+              formik.setTouched(touched, true);
+
+              // Delay a tick to let Formik update state
+              setTimeout(async () => {
+                const errors = await formik.validateForm();
+                const hasErrors = fieldsToValidate.some(field => errors[field]);
+                if (!hasErrors) {
+                  nextStep();
+                }
+              }, 0);
+            }}
+
+
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+          >
+            Next
+          </button>
+
         ) : (
           <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
             Register Student

@@ -1,81 +1,103 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 
-
 export const AuthContext = createContext();
+
+export const useAuth = () => {
+    return useContext(AuthContext);
+};
 
 const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [authChecked, setAuthChecked] = useState(false);
+
+    // Base URL for API requests
+    const BASE_URL = 'https://school-management-server-1pvb.onrender.com';
 
     // Configure axios defaults
-    // axios.defaults.baseURL = 'http://localhost:5000/api';
-    axios.defaults.baseURL = 'https://school-management-server-1pvb.onrender.com/api';
-    axios.defaults.withCredentials = true;
+    useEffect(() => {
+        axios.defaults.withCredentials = true;
+    }, []);
 
     // Axios interceptor to handle token expiration
-    axios.interceptors.response.use(
-        (response) => response,
-        async (error) => {
-            if (!error.response) {
+    useEffect(() => {
+        const interceptor = axios.interceptors.response.use(
+            (response) => response,
+            async (error) => {
+                if (!error.response) {
+                    return Promise.reject(error);
+                }
+
+                const originalRequest = error.config;
+
+                // If error is 401 and not already retrying
+                if (
+                    error.response.status === 401 &&
+                    !originalRequest._retry &&
+                    !originalRequest.url.includes('/api/auth/refresh-token')
+                ) {
+                    originalRequest._retry = true;
+
+                    try {
+                        // Try to refresh the token
+                        const { data } = await axios.post(`${BASE_URL}/api/auth/refresh-token`);
+
+                        // If successful, retry the original request
+                        if (data.success) {
+                            return axios(originalRequest);
+                        }
+                    } catch (refreshError) {
+                        // If refresh fails, log out the user
+                        setCurrentUser(null);
+                        return Promise.reject(refreshError);
+                    }
+                }
+
                 return Promise.reject(error);
             }
+        );
 
-            const originalRequest = error.config;
+        // Clean up interceptor on component unmount
+        return () => {
+            axios.interceptors.response.eject(interceptor);
+        };
+    }, [BASE_URL]);
 
-            // If error is 401 and not already retrying
-            if (
-                // error.response.status === 401 && !originalRequest._retry
-                error.response.status === 401 &&
-                !originalRequest._retry &&
-                originalRequest.url !== '/auth/refresh-token'
-            ) {
-                originalRequest._retry = true;
-
-                try {
-                    // Try to refresh the token
-                    const { data } = await axios.post('/auth/refresh-token');
-
-                    // If successful, retry the original request
-                    if (data.success) {
-                        return axios(originalRequest);
-                    }
-                } catch (refreshError) {
-                    // If refresh fails, log out the user
-                    logout();
-                    return Promise.reject(refreshError);
-                }
-            }
-
-            return Promise.reject(error);
-        }
-    );
-
-    // Check if user is already logged in
+    // Check if user is authenticated on initial load
     useEffect(() => {
         const checkUser = async () => {
             try {
-                setLoading(true);
-                const { data } = await axios.get('/auth/me');
+                // Try with /api prefix first
+                const { data } = await axios.get(`${BASE_URL}/api/auth/me`);
+                
                 if (data.success) {
-                    setCurrentUser(data.data);
+                    setCurrentUser(data.admin || data.data);
                 }
-            } catch (error) {
-                console.error('Auth check error:', error);
-                if (error.response) {
-                    console.error('Error status:', error.response.status);
+            } catch {
+                try {
+                    // If first attempt fails, try without /api prefix
+                    const { data } = await axios.get(`${BASE_URL}/auth/me`);
+                    
+                    if (data.success) {
+                        setCurrentUser(data.admin || data.data);
+                    }
+                } catch {
+                    // Both attempts failed, log error and set user to null
+                    console.log('Auth check error:', error);
+                    setCurrentUser(null);
                 }
-                setCurrentUser(null);
             } finally {
                 setLoading(false);
+                setAuthChecked(true);
             }
         };
 
         checkUser();
-    }, []);
+    }, [BASE_URL]);
 
     // Register user
     const register = async (userData) => {
@@ -83,18 +105,29 @@ const AuthProvider = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            const { data } = await axios.post('/auth/register', userData);
+            const { data } = await axios.post(`${BASE_URL}/api/auth/register`, userData);
 
             if (data.success) {
                 setCurrentUser(data.admin);
                 toast.success('Registration successful!');
                 return { success: true };
             }
-        } catch (error) {
-            const message = error.response?.data?.message || 'Registration failed';
-            setError(message);
-            toast.error(message);
-            return { success: false, message };
+        } catch {
+            // Try without /api prefix if first attempt fails
+            try {
+                const { data } = await axios.post(`${BASE_URL}/auth/register`, userData);
+                
+                if (data.success) {
+                    setCurrentUser(data.admin);
+                    toast.success('Registration successful!');
+                    return { success: true };
+                }
+            } catch {
+                const message = error.response?.data?.message || 'Registration failed';
+                setError(message);
+                toast.error(message);
+                return { success: false, message };
+            }
         } finally {
             setLoading(false);
         }
@@ -106,18 +139,29 @@ const AuthProvider = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            const { data } = await axios.post('/auth/login', credentials);
+            const { data } = await axios.post(`${BASE_URL}/api/auth/login`, credentials);
 
             if (data.success) {
                 setCurrentUser(data.admin);
                 toast.success('Login successful!');
                 return { success: true };
             }
-        } catch (error) {
-            const message = error.response?.data?.message || 'Login failed';
-            setError(message);
-            toast.error(message);
-            return { success: false, message };
+        } catch {
+            // Try without /api prefix if first attempt fails
+            try {
+                const { data } = await axios.post(`${BASE_URL}/auth/login`, credentials);
+                
+                if (data.success) {
+                    setCurrentUser(data.admin);
+                    toast.success('Login successful!');
+                    return { success: true };
+                }
+            } catch {
+                const message = error.response?.data?.message || 'Login failed';
+                setError(message);
+                toast.error(message);
+                return { success: false, message };
+            }
         } finally {
             setLoading(false);
         }
@@ -127,10 +171,18 @@ const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             setLoading(true);
-            await axios.get('/auth/logout');
+            
+            // Try with /api prefix first
+            try {
+                await axios.get(`${BASE_URL}/api/auth/logout`);
+            } catch {
+                // If fails, try without /api prefix
+                await axios.get(`${BASE_URL}/auth/logout`);
+            }
+            
             setCurrentUser(null);
             toast.info('Logged out successfully');
-        } catch (error) {
+        } catch {
             console.error('Logout error:', error);
         } finally {
             setLoading(false);
@@ -143,13 +195,24 @@ const AuthProvider = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            const { data } = await axios.put('/auth/change-password', passwordData);
-
-            if (data.success) {
-                toast.success('Password changed successfully!');
-                return { success: true };
+            // Try with /api prefix first
+            try {
+                const { data } = await axios.put(`${BASE_URL}/api/auth/change-password`, passwordData);
+                
+                if (data.success) {
+                    toast.success('Password changed successfully!');
+                    return { success: true };
+                }
+            } catch {
+                // If fails, try without /api prefix
+                const { data } = await axios.put(`${BASE_URL}/auth/change-password`, passwordData);
+                
+                if (data.success) {
+                    toast.success('Password changed successfully!');
+                    return { success: true };
+                }
             }
-        } catch (error) {
+        } catch {
             const message = error.response?.data?.message || 'Failed to change password';
             setError(message);
             toast.error(message);
@@ -165,13 +228,24 @@ const AuthProvider = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            const { data } = await axios.post('/auth/forgot-password', { email });
-
-            if (data.success) {
-                toast.success('Password reset email sent!');
-                return { success: true, resetToken: data.resetToken };
+            // Try with /api prefix first
+            try {
+                const { data } = await axios.post(`${BASE_URL}/api/auth/forgot-password`, { email });
+                
+                if (data.success) {
+                    toast.success('Password reset email sent!');
+                    return { success: true, resetToken: data.resetToken };
+                }
+            } catch {
+                // If fails, try without /api prefix
+                const { data } = await axios.post(`${BASE_URL}/auth/forgot-password`, { email });
+                
+                if (data.success) {
+                    toast.success('Password reset email sent!');
+                    return { success: true, resetToken: data.resetToken };
+                }
             }
-        } catch (error) {
+        } catch {
             const message = error.response?.data?.message || 'Failed to send reset email';
             setError(message);
             toast.error(message);
@@ -187,14 +261,26 @@ const AuthProvider = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            const { data } = await axios.put(`/auth/reset-password/${resetToken}`, { password });
-
-            if (data.success) {
-                setCurrentUser(data.admin);
-                toast.success('Password reset successful!');
-                return { success: true };
+            // Try with /api prefix first
+            try {
+                const { data } = await axios.put(`${BASE_URL}/api/auth/reset-password/${resetToken}`, { password });
+                
+                if (data.success) {
+                    setCurrentUser(data.admin);
+                    toast.success('Password reset successful!');
+                    return { success: true };
+                }
+            } catch {
+                // If fails, try without /api prefix
+                const { data } = await axios.put(`${BASE_URL}/auth/reset-password/${resetToken}`, { password });
+                
+                if (data.success) {
+                    setCurrentUser(data.admin);
+                    toast.success('Password reset successful!');
+                    return { success: true };
+                }
             }
-        } catch (error) {
+        } catch {
             const message = error.response?.data?.message || 'Failed to reset password';
             setError(message);
             toast.error(message);
@@ -210,6 +296,7 @@ const AuthProvider = ({ children }) => {
                 currentUser,
                 loading,
                 error,
+                authChecked,
                 register,
                 login,
                 logout,
@@ -223,8 +310,8 @@ const AuthProvider = ({ children }) => {
     );
 };
 
-export default AuthProvider;
-
 AuthProvider.propTypes = {
-        children: PropTypes.node.isRequired,
-    };
+    children: PropTypes.node.isRequired,
+};
+
+export default AuthProvider;

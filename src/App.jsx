@@ -14,19 +14,15 @@ import Dashboard from './pages/Dashboard/DashboardHome';
 // Context & Utilities
 import AuthProvider from './context/AuthContext';
 import PrivateRoute from './utils/PrivateRoute';
-// import { useState } from 'react';
-
 
 function App() {
-
   return (
     <AuthProvider>
       <Router>
         <ToastContainer position="top-right" autoClose={3000} />
         <Routes>
           {/* Public routes */}
-          {/* <Route path="/" element={<LandingPage />} /> */}
-          <Route path="/" element={<LandingPage/>} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<SignUp />} />
           <Route path="/forgot-password" element={<AccountRecoveryForgotPassword />} />

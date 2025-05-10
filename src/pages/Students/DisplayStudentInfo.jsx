@@ -21,23 +21,19 @@ const DisplayStudentInfo = () => {
     setMessage('');
 
     try {
-      const response = await axios.get('https://school-management-server-1pvb.onrender.com/api/students/getstudents', {
+      const response = await axios.get('http://localhost:5000/api/students/getstudents', {
         params: { grade: selectedClass, section: selectedSection },
       });
-
       console.log(response.data);
       setStudents(response.data);
-
       if (response.data.length === 0) {
         setNoStudents(true);
         setMessage("No students found for the selected class and section.");
       } else {
         setShowTable(true);
       }
-
       const boys = response.data.filter(student => student.gender === 'Male').length;
       const girls = response.data.filter(student => student.gender === 'Female').length;
-
       setBoysCount(boys);
       setGirlsCount(girls);
     } catch (error) {
@@ -52,24 +48,22 @@ const DisplayStudentInfo = () => {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif',marginTop:'20px', backgroundColor: '#f9fafb', borderRadius: '10px', boxShadow: '0 2px 8px rgba(141, 24, 24, 0.1)' }}>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', marginTop: '20px', backgroundColor: '#f9fafb', borderRadius: '10px', boxShadow: '0 2px 8px rgba(141, 24, 24, 0.1)' }}>
       <h2 className="text-2xl font-bold text-blue-600 mb-6">Student Information</h2>
 
       {/* Class Tabs */}
       <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginTop: '10px' }}>
         {classes.map((cls) => (
           <button
-          key={cls}
-          onClick={() => setSelectedClass(cls)}
-          className={`px-3 py-1.5 border rounded transition-colors duration-100 ${
-            selectedClass === cls
+            key={cls}
+            onClick={() => setSelectedClass(cls)}
+            className={`px-3 py-1.5 border rounded transition-colors duration-100 ${selectedClass === cls
               ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
               : 'bg-gray-100 text-black border-gray-300 hover:bg-gray-200'
-          }`}
-        >
-          {cls}
-        </button>
-        
+              }`}
+          >
+            {cls}
+          </button>
         ))}
       </div>
 
@@ -77,27 +71,24 @@ const DisplayStudentInfo = () => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px' }}>
         <div style={{ display: 'flex', gap: '10px' }}>
           {sections.map((sec) => (
-           <button
-           key={sec}
-           onClick={() => setSelectedSection(sec)}
-           className={`px-3 py-1.5  border rounded-md transition-colors duration-100 ${
-             selectedSection === sec
-               ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
-               : 'bg-gray-100 text-black border-gray-300 hover:bg-gray-200'
-           }`}
-         >
-           Section {sec}
-         </button>
-         
+            <button
+              key={sec}
+              onClick={() => setSelectedSection(sec)}
+              className={`px-3 py-1.5  border rounded-md transition-colors duration-100 ${selectedSection === sec
+                ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                : 'bg-gray-100 text-black border-gray-300 hover:bg-gray-200'
+                }`}
+            >
+              Section {sec}
+            </button>
           ))}
         </div>
         <button
-  onClick={handleSearch}
-  className="px-4 py-1.5 bg-blue-600 text-white rounded-md h-10 hover:bg-blue-700 transition-duration-200"
->
-  Search Students
-</button>
-
+          onClick={handleSearch}
+          className="px-4 py-1.5 bg-blue-600 text-white rounded-md h-10 hover:bg-blue-700 transition-duration-200"
+        >
+          Search Students
+        </button>
       </div>
 
       {/* No Students Message */}
@@ -111,64 +102,62 @@ const DisplayStudentInfo = () => {
       {showTable && (
         <>
           <table className="w-full mt-5 border-collapse">
-  <thead>
-    <tr className="bg-gray-200 text-left">
-      <th className="p-2.5 border border-gray-500">Admission No</th>
-      <th className="p-2.5 border border-gray-500">Class</th>
-      <th className="p-2.5 border border-gray-500">Section</th>
-      <th className="p-2.5 border border-gray-500">Roll No</th>
-      <th className="p-2.5 border border-gray-500">Student Name</th>
-      <th className="p-2.5 border border-gray-500">Parent Name</th>
-    </tr>
-  </thead>
-  <tbody>
-    {students.map((student, index) => (
-      <tr key={index}>
-        <td className="p-2.5 border border-gray-500">{student.admissionNumber}</td>
-        <td className="p-2.5 border border-gray-500">{student.grade}</td>
-        <td className="p-2.5 border border-gray-500">{student.section}</td>
-        <td className="p-2.5 border border-gray-500">{student.rollNumber}</td>
-        <td className="p-2.5 border border-gray-500">
-          {`${student.firstName} ${student.middleName || ''} ${student.lastName}`}
-        </td>
-        <td className="p-2.5 border border-gray-500">{student.parentName}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
+            <thead>
+              <tr className="bg-gray-200 text-left">
+                <th className="p-2.5 border border-gray-500">Admission No</th>
+                <th className="p-2.5 border border-gray-500">Class</th>
+                <th className="p-2.5 border border-gray-500">Section</th>
+                <th className="p-2.5 border border-gray-500">Roll No</th>
+                <th className="p-2.5 border border-gray-500">Student Name</th>
+                <th className="p-2.5 border border-gray-500">Parent Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.map((student, index) => (
+                <tr key={index}>
+                  <td className="p-2.5 border border-gray-500">{student.admissionNumber}</td>
+                  <td className="p-2.5 border border-gray-500">{student.grade}</td>
+                  <td className="p-2.5 border border-gray-500">{student.section}</td>
+                  <td className="p-2.5 border border-gray-500">{student.rollNumber}</td>
+                  <td className="p-2.5 border border-gray-500">
+                    {`${student.firstName} ${student.middleName || ''} ${student.lastName}`}
+                  </td>
+                  <td className="p-2.5 border border-gray-500">{student.parentName}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
           {/* Student Stats */}
           <div className="mt-5 ml-8 flex items-center gap-5">
-  <div>
-    Total Students: 
-    <input
-      type="text"
-      className="w-12 ml-1 px-1 py-0.5 border border-gray-100 rounded focus:outline-none "
-      value={students.length}
-      readOnly
-    />
-  </div>
-  <div>
-    Boys: 
-    <input
-      type="text"
-      className="w-12 ml-1 px-1 py-0.5 focus:outline-none  border border-gray-100 rounded"
-      value={boysCount}
-      readOnly
-    />
-  </div>
-  <div>
-    Girls: 
-    <input
-      type="text"
-      className="w-12 ml-1 px-1 py-0.5 focus:outline-none  border border-gray-100 rounded"
-      value={girlsCount}
-      readOnly
-    />
-  </div>
-</div>
-
+            <div>
+              Total Students:
+              <input
+                type="text"
+                className="w-12 ml-1 px-1 py-0.5 border border-gray-100 rounded focus:outline-none "
+                value={students.length}
+                readOnly
+              />
+            </div>
+            <div>
+              Boys:
+              <input
+                type="text"
+                className="w-12 ml-1 px-1 py-0.5 focus:outline-none  border border-gray-100 rounded"
+                value={boysCount}
+                readOnly
+              />
+            </div>
+            <div>
+              Girls:
+              <input
+                type="text"
+                className="w-12 ml-1 px-1 py-0.5 focus:outline-none  border border-gray-100 rounded"
+                value={girlsCount}
+                readOnly
+              />
+            </div>
+          </div>
         </>
       )}
     </div>
