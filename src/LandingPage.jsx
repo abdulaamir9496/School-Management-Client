@@ -29,13 +29,13 @@ const LandingPage = () => {
     }, [isMenuOpen]);
 
     const heroImages = [
-        "../Images/seminar1.jpg",
-        "../Images/seminar2.jpg",
-        "../Images/feildtrip1.jpeg",
-        "../Images/fieldtrip2.jpeg",
-        "../Images/fieldtrip3.jpeg",
-        "../Images/ground2.jpeg",
-        "../Images/ground1.jpg",
+        "../public/Images/seminar1.jpg",
+        "../public/Images/seminar2.jpg",
+        "../public/Images/feildtrip1.jpeg",
+        "../public/Images/fieldtrip2.jpeg",
+        "../public/Images/fieldtrip3.jpeg",
+        "../public/Images/ground2.jpeg",
+        "../public/Images/ground1.jpg",
     ];
 
     useEffect(() => {
