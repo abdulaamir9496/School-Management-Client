@@ -42,7 +42,7 @@ const DashboardHome = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const { data } = await axios.get('https://school-management-server-yhtv.onrender.com/api/dashboard/stats');
+                const { data } = await axios.get('https://school-management-server-1pvb.onrender.com/api/dashboard/stats');
                 setStats(data);
             } catch (error) {
                 console.error('Error fetching dashboard stats:', error);

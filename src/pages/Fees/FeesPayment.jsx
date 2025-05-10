@@ -32,7 +32,7 @@ export default function FeesPaymentForm() {
     }
   
     try {
-      const response = await axios.get('https://school-management-server-yhtv.onrender.com/api/students/search', {
+      const response = await axios.get('https://school-management-server-1pvb.onrender.com/api/students/search', {
         params: {
           admissionNumber: searchBy === "admission" ? searchInput.trim() : undefined,
           studentName: searchBy === "student" ? searchInput.trim() : undefined
@@ -86,7 +86,7 @@ export default function FeesPaymentForm() {
       };
     
       try {
-        const response = await axios.post('https://school-management-server-yhtv.onrender.com/api/fees/payment', paymentData);
+        const response = await axios.post('https://school-management-server-1pvb.onrender.com/api/fees/payment', paymentData);
         console.log('Response from backend:', response.data); 
     
         if (response.status === 200) {

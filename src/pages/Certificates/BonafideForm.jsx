@@ -33,7 +33,7 @@ const BonafideForm = ({ onCertificateAdded }) => {
     try {
       setIsSubmitting(true);
       
-      const res = await fetch('https://school-management-server-yhtv.onrender.com/api/bonafide', {
+      const res = await fetch('https://school-management-server-1pvb.onrender.com/api/bonafide', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

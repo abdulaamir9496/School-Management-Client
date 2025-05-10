@@ -67,7 +67,7 @@ const StudentRegistrationForm = () => {
       }
 
       try {
-        const response = await axios.post('https://school-management-server-yhtv.onrender.com/api/Newregistration/register', formData, {
+        const response = await axios.post('https://school-management-server-1pvb.onrender.com/api/Newregistration/register', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         alert('Student Registered Successfully!');

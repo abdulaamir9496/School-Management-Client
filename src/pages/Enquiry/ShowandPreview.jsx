@@ -14,7 +14,7 @@ const [endDate, setEndDate] = useState("");
   useEffect(() => {
     const fetchEnquiries = async () => {
       try {
-        const response = await fetch('https://school-management-server-yhtv.onrender.com/api/enquiry/history/fetch');
+        const response = await fetch('https://school-management-server-1pvb.onrender.com/api/enquiry/history/fetch');
         if (!response.ok) throw new Error('Failed to fetch enquiries');
         const data = await response.json();
         setEnquiries(data);
@@ -62,7 +62,7 @@ const [endDate, setEndDate] = useState("");
 
     try {
       const response = await fetch(
-        `https://school-management-server-yhtv.onrender.com/api/enquiry/history?start=${startDate}&end=${endDate}`
+        `https://school-management-server-1pvb.onrender.com/api/enquiry/history?start=${startDate}&end=${endDate}`
       );
       if (!response.ok) {
         const errData = await response.json();

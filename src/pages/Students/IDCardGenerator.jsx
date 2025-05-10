@@ -53,7 +53,7 @@ function IDCardGenerator() {
           : `studentName=${searchValue}`;
 
       const res = await fetch(
-        `https://school-management-server-yhtv.onrender.com/api/idcard/find-student?${queryParam}`
+        `https://school-management-server-1pvb.onrender.com/api/idcard/find-student?${queryParam}`
       );
 
       if (!res.ok) {
@@ -79,7 +79,7 @@ function IDCardGenerator() {
         address: studentData.address,
         phone: studentData.phoneNumber,
         photo: studentData.studentPhoto
-          ? `https://school-management-server-yhtv.onrender.com/uploads/${studentData.studentPhoto}`
+          ? `https://school-management-server-1pvb.onrender.com/uploads/${studentData.studentPhoto}`
           : null,
         logo: student.logo,
       });

@@ -15,7 +15,7 @@ const BonafideTracker = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`https://school-management-server-yhtv.onrender.com/api/bonafide?page=${currentPage}&search=${searchQuery}&limit=${ITEMS_PER_PAGE}`);
+        const response = await fetch(`https://school-management-server-1pvb.onrender.com/api/bonafide?page=${currentPage}&search=${searchQuery}&limit=${ITEMS_PER_PAGE}`);
         
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
@@ -75,7 +75,7 @@ const BonafideTracker = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`https://school-management-server-yhtv.onrender.com/api/bonafide/${id}`, {
+      const response = await fetch(`https://school-management-server-1pvb.onrender.com/api/bonafide/${id}`, {
         method: 'DELETE',
       });
 
@@ -92,7 +92,7 @@ const BonafideTracker = () => {
   };
 
   const handleDownload = (id) => {
-    window.open(`https://school-management-server-yhtv.onrender.com/api/bonafide/download/${id}`, '_blank');
+    window.open(`https://school-management-server-1pvb.onrender.com/api/bonafide/download/${id}`, '_blank');
   };
 
   const handleDownloadAllPDF = async () => {
@@ -102,8 +102,8 @@ const BonafideTracker = () => {
       
       // Include search query if one exists
       const endpoint = searchQuery 
-        ? `https://school-management-server-yhtv.onrender.com/api/bonafide/download/all?search=${encodeURIComponent(searchQuery)}`
-        : 'https://school-management-server-yhtv.onrender.com/api/bonafide/download/all';
+        ? `https://school-management-server-1pvb.onrender.com/api/bonafide/download/all?search=${encodeURIComponent(searchQuery)}`
+        : 'https://school-management-server-1pvb.onrender.com/api/bonafide/download/all';
       
       const response = await fetch(endpoint);
 

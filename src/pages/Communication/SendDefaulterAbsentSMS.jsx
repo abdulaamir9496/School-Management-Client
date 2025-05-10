@@ -31,7 +31,7 @@ const SendDefaulterAbsentEmail = () => {
             // Ensure both admission number and student name are entered
             if (admissionNumber.trim() || searchTerm.trim()) {
                 // Search by both admission number and student name
-                const res = await axios.get("https://school-management-server-yhtv.onrender.com/api/students/search", {
+                const res = await axios.get("https://school-management-server-1pvb.onrender.com/api/students/search", {
                     params: { admissionNumber, studentName: searchTerm, type: "student-admission" },
                 });
     
@@ -79,7 +79,7 @@ const SendDefaulterAbsentEmail = () => {
                 return;
             }
 
-            await axios.post("https://school-management-server-yhtv.onrender.com/api/email/send-defaulters", {
+            await axios.post("https://school-management-server-1pvb.onrender.com/api/email/send-defaulters", {
                 recipients: emails,
                 subject: `${activeTab} Notification`,
                 message,  // pass the message
